@@ -39,7 +39,7 @@ public class Player {
     //ID игрока
     @Id
     @Column(name = "id")
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     //Имя персонажа (до 12 знаков включительно)
@@ -51,11 +51,11 @@ public class Player {
     private String title;
 
     //Расса персонажа
-    @Column(name = "race")
+    @Enumerated(EnumType.STRING)
     private Race race;
 
     //Профессия персонажа
-    @Column(name = "profession")
+    @Enumerated(EnumType.STRING)
     private Profession profession;
 
     //Опыт персонажа. Диапазон значений 0..10,000,000

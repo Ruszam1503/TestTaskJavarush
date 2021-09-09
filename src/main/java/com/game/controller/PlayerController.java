@@ -4,8 +4,10 @@ import com.game.entity.Profession;
 import com.game.entity.Race;
 import com.game.entity.Player;
 import com.game.service.PlayerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -14,8 +16,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/rest/players")
 public class PlayerController {
-
-    private final PlayerService playerService;
+   @Autowired
+    PlayerService playerService;
+    @Autowired
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
     }
@@ -61,7 +64,7 @@ public class PlayerController {
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
     //Создать игрока
-    @PostMapping
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Player> createPlayer(@RequestBody(required = false) Player newPlayer) {
         HttpHeaders headers = new HttpHeaders();
         try {
