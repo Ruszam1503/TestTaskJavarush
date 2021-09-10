@@ -85,24 +85,81 @@ public class PlayerServiceImpl implements PlayerService{
         if (player.getBanned() == null) {
             player.setBanned(false);
         }
-        player.setLevel(Math.toIntExact(Math.round((Math.sqrt(2500 + 200 * player.getExperience()) - 50) / 100)));
+        player.setLevel((int)(Math.sqrt(2500 + 200 * player.getExperience())- 50) / 100);
         player.setUntilNextLevel(50 * (player.getLevel() + 1) * (player.getLevel() + 2) - player.getExperience());
         playerRepository.save(player);
     }
 
 
     @Override
-    public void updatePlayer(Long id, Player player) {
+    public Player updatePlayer(Long id, Player player) {
         Player playerFromDb = playerRepository.findById(id).get();
-        playerFromDb.setName(player.getName());
-        playerFromDb.setTitle(player.getTitle());
-        playerFromDb.setRace(player.getRace());
-        playerFromDb.setProfession(player.getProfession());
-        playerFromDb.setBirthday(player.getBirthday());
-        playerFromDb.setBanned(player.getBanned());
-        playerFromDb.setExperience(player.getExperience());
-        playerRepository.save(playerFromDb);
+
+        String strDate1 = "01-01-2000";
+        String strDate2 = "01-01-3000";
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date one;
+        Date two;
+        try {
+            one = formatter.parse(strDate1);
+            two = formatter.parse(strDate2);
+        }
+        catch (ParseException e) {
+            throw new BadRequestException();
+        }
+
+
+
+        if (player.getName()!=null
+        && !(player.getName().equals(""))
+        && player.getName().length() <= 12){
+        playerFromDb.setName(player.getName());}
+
+
+        if (player.getTitle()!=null
+        && player.getTitle().length() <= 30){
+        playerFromDb.setTitle(player.getTitle());}
+
+
+        if (player.getRace()!=null){
+        playerFromDb.setRace(player.getRace());}
+
+
+        if (player.getProfession()!=null){
+        playerFromDb.setProfession(player.getProfession());}
+
+
+        if(player.getBirthday() != null) {
+            if(player.getBirthday().getTime() < 0L)
+                throw  new BadRequestException();
+            playerFromDb.setBirthday(player.getBirthday());
+        }
+
+            if (player.getBanned()!=null){
+        playerFromDb.setBanned(player.getBanned());}
+
+
+
+        if(player.getExperience() != null) {
+
+            if(player.getExperience() > 10_000_00 || player.getExperience() < 0)
+                throw  new BadRequestException();
+
+            playerFromDb.setExperience(player.getExperience());
+            playerFromDb.setLevel((int)(Math.sqrt(2500 + 200 * player.getExperience())- 50) / 100);
+
+            playerFromDb.setUntilNextLevel(50 * (playerFromDb.getLevel() + 1) * (playerFromDb.getLevel() + 2) - playerFromDb.getExperience());
+        }
+
+        playerFromDb.setId(id);
+        return playerRepository.save(playerFromDb);
+
     }
+
+
+
+
+
 
     @Override
     public void deletePlayer(Long id) {

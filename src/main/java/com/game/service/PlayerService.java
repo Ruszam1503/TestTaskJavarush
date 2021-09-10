@@ -18,7 +18,7 @@ public interface PlayerService {
     public void createPlayer (Player player);
 
     //Обновить игрока
-    public void updatePlayer ( Long id, Player player);
+    public Player updatePlayer ( Long id, Player player);
 
     //Удалить игрока
     public void deletePlayer ( Long id);

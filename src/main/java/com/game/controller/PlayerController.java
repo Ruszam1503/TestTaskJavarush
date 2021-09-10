@@ -7,7 +7,6 @@ import com.game.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -64,7 +63,7 @@ public class PlayerController {
         return new ResponseEntity<>(player, HttpStatus.OK);
     }
     //Создать игрока
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping
     public ResponseEntity<Player> createPlayer(@RequestBody(required = false) Player newPlayer) {
         HttpHeaders headers = new HttpHeaders();
         try {
@@ -88,16 +87,30 @@ public class PlayerController {
 
         playerService.deletePlayer(id);
         return new ResponseEntity<>( HttpStatus.OK);
-
-//        String strId = Long.toString(id);
-//       if (id==0 || id<0 || !(strId.matches("\\d+")) ){
-//            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);}
-//        else playerService.deletePlayer(id);
-//     return new ResponseEntity<>(HttpStatus.OK);
-
-
     }
     //Обновить игрока
-
+    @PostMapping({"/{id}"})
+    public ResponseEntity<Player> updatePlayer(@PathVariable("id") Long id , @RequestBody Player player) {
+        HttpHeaders headers = new HttpHeaders();
+        if (id == null || id == 0) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if(!playerService.existsById(id))
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if(player.getName()==null &&
+                player.getTitle()==null &&
+                player.getRace()==null &&
+                player.getProfession()==null &&
+                player.getBirthday()==null &&
+                player.getBanned()==null &&
+                player.getExperience()==null)
+            return new ResponseEntity<>(playerService.getPlayer(id), HttpStatus.OK);
+        try {
+            playerService.updatePlayer(id, player);
+        } catch(Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(playerService.updatePlayer(id,player),headers, HttpStatus.OK);
+    }
 
 }
