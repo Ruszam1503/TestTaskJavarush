@@ -1,22 +1,28 @@
 package com.game.service;
 
+import com.game.controller.PlayerOrder;
+import com.game.entity.Profession;
+import com.game.entity.Race;
 import com.game.exception.BadRequestException;
 import com.game.entity.Player;
 import com.game.repository.PlayerRepository;
 
+import com.game.specification.PlayerSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PlayerServiceImpl implements PlayerService{
 
-    @Autowired
     PlayerRepository playerRepository;
     @Autowired
     public PlayerServiceImpl(PlayerRepository playerRepository) {
@@ -25,10 +31,45 @@ public class PlayerServiceImpl implements PlayerService{
 
 
     @Override
-    public List<Player> getPlayersList() {
-        List<Player> playerList = new ArrayList<>();
-//        playerList.addAll(playerRepository.findAll());
-        return playerList;
+    public List<Player> getPlayersList(String name,
+                                       String title,
+                                       Race race,
+                                       Profession profession,
+                                       Long after,
+                                       Long before, Boolean banned,
+                                       Integer minExperience,
+                                       Integer maxExperience,
+                                       Integer minLevel,
+                                       Integer maxLevel,
+                                       PlayerOrder order,
+                                       Integer pageNumber,
+                                       Integer pageSize) {
+        Sort sort = null;
+        switch (order) {
+            case ID:
+                sort = Sort.by("id");
+                break;
+            case NAME:
+                sort = Sort.by("name");
+                break;
+            case EXPERIENCE:
+                sort = Sort.by("experience");
+                break;
+            case BIRTHDAY:
+                sort = Sort.by("birthday");
+                break;
+        }
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Player> page = playerRepository.findAll(PlayerSpecification.findPlayerByName(name)
+                .and(PlayerSpecification.findPlayerByRace(race))
+                .and(PlayerSpecification.findPlayerByProfession(profession))
+                .and(PlayerSpecification.findPlayerByBanned(banned))
+                .and(PlayerSpecification.findPlayerByTitle(title))
+                .and(PlayerSpecification.findPlayerByDate(after,before))
+                .and(PlayerSpecification.findPlayerByExperience(minExperience, maxExperience))
+                .and(PlayerSpecification.findPlayerByLevel(minLevel, maxLevel)),
+                pageable);
+        return page.getContent();
     }
 
     @Override
@@ -41,14 +82,8 @@ public class PlayerServiceImpl implements PlayerService{
 
     @Override
     public Player getPlayer(Long id) {
- return playerRepository.findById(id).get();
-//       if(player.isPresent()){
-//           return player.get();
-//       }
-//       else throw  new NotFoundException(id);
-//       return playerRepository.findById(id).orElseThrow(() ->
-//                new NotFoundException(id));
-}
+        return playerRepository.findById(id).get();
+    }
 
     @Override
     public void createPlayer(Player player) {
@@ -172,4 +207,8 @@ public class PlayerServiceImpl implements PlayerService{
     }
 
 
-}
+
+    }
+
+
+
