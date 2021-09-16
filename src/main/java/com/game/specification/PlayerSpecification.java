@@ -118,17 +118,17 @@ public class PlayerSpecification {
                 Predicate lesser = null;
 
                 if (minLevel == null && maxLevel != null) {
-                    lesser = criteriaBuilder.lessThanOrEqualTo(root.get("experience"), maxLevel);
+                    lesser = criteriaBuilder.lessThanOrEqualTo(root.get("level"), maxLevel);
                     return lesser;
                 }
                 if (minLevel != null && maxLevel == null) {
-                    greater = criteriaBuilder.greaterThanOrEqualTo(root.get("experience"), minLevel);
+                    greater = criteriaBuilder.greaterThanOrEqualTo(root.get("level"), minLevel);
                     return greater;
                 }
 
                 if (minLevel != null && maxLevel != null) {
-                    greater = criteriaBuilder.greaterThanOrEqualTo(root.get("experience"), minLevel);
-                    lesser = criteriaBuilder.lessThanOrEqualTo(root.get("experience"), maxLevel);
+                    greater = criteriaBuilder.greaterThanOrEqualTo(root.get("level"), minLevel);
+                    lesser = criteriaBuilder.lessThanOrEqualTo(root.get("level"), maxLevel);
                     return criteriaBuilder.and(greater, lesser);
                 }
 

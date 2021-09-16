@@ -36,7 +36,7 @@ public class PlayerServiceImpl implements PlayerService{
                                        Race race,
                                        Profession profession,
                                        Long after,
-                                       Long before, Boolean banned,
+                                       Long before,Boolean banned,
                                        Integer minExperience,
                                        Integer maxExperience,
                                        Integer minLevel,
@@ -73,11 +73,45 @@ public class PlayerServiceImpl implements PlayerService{
     }
 
     @Override
-    public Integer getPlayersCount() {
-        List<Player> playerList = new ArrayList<>();
-        playerRepository.findAll().forEach(playerList::add);
-        Integer count = playerList.size();
-        return count;
+    public Integer getPlayersCount(String name,
+                                   String title,
+                                   Race race,
+                                   Profession profession,
+                                   Long after,
+                                   Long before,Boolean banned,
+                                   Integer minExperience,
+                                   Integer maxExperience,
+                                   Integer minLevel,
+                                   Integer maxLevel,
+                                   PlayerOrder order,
+                                   Integer pageNumber,
+                                   Integer pageSize) {
+        Sort sort = null;
+        switch (order) {
+            case ID:
+                sort = Sort.by("id");
+                break;
+            case NAME:
+                sort = Sort.by("name");
+                break;
+            case EXPERIENCE:
+                sort = Sort.by("experience");
+                break;
+            case BIRTHDAY:
+                sort = Sort.by("birthday");
+                break;
+        }
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+        Page<Player> page = playerRepository.findAll(PlayerSpecification.findPlayerByName(name)
+                        .and(PlayerSpecification.findPlayerByRace(race))
+                        .and(PlayerSpecification.findPlayerByProfession(profession))
+                        .and(PlayerSpecification.findPlayerByBanned(banned))
+                        .and(PlayerSpecification.findPlayerByTitle(title))
+                        .and(PlayerSpecification.findPlayerByDate(after,before))
+                        .and(PlayerSpecification.findPlayerByExperience(minExperience, maxExperience))
+                        .and(PlayerSpecification.findPlayerByLevel(minLevel, maxLevel)),
+                pageable);
+        return (int)page.getTotalElements();
     }
 
     @Override

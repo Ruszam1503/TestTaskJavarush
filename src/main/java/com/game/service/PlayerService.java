@@ -11,8 +11,9 @@ import java.util.Map;
 
 public interface PlayerService {
     //Получить список игроков
-    public List<Player> getPlayersList(String name,
-                                       String title,
+    public List<Player> getPlayersList(
+            String name,
+            String title,
                                        Race race,
                                        Profession profession,
                                        Long after,
@@ -27,7 +28,20 @@ public interface PlayerService {
                                        Integer pageSize);
 
     //Получите количество игроков
-    public Integer getPlayersCount();
+    public Integer getPlayersCount(String name,
+                                   String title,
+                                   Race race,
+                                   Profession profession,
+                                   Long after,
+                                   Long before,
+                                   Boolean banned,
+                                   Integer minExperience,
+                                   Integer maxExperience,
+                                   Integer minLevel,
+                                   Integer maxLevel,
+                                   PlayerOrder order,
+                                   Integer pageNumber,
+                                   Integer pageSize);
 
     //Получить игрока по id
     public Player getPlayer (Long id);
